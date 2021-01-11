@@ -143,7 +143,10 @@ int main()
     
     Tcompare f;                                            //7
     auto* smaller = f.compare(&t1, &t2);                              //8
-    std::cout << "the smaller one is << " << smaller->value << std::endl; //9
+    if (smaller != nullptr)
+    {
+        std::cout << "the smaller one is << " << smaller->value << std::endl; //9
+    }
     
     U u1;
     float updatedValue = 5.f;
