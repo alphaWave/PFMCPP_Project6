@@ -28,13 +28,10 @@ struct T
 
 struct Tcompare                                //4
 {
-    T* compare(T* a, T* b) //5
+    T* compare(T& a, T& b) //5
     {
-        if (a != nullptr && b != nullptr)
-        {
-            if( a->value < b->value ) return a;
-            if( a->value > b->value ) return b;
-        }
+        if( a.value < b.value ) return &a;
+        if( a.value > b.value ) return &b;
         return nullptr;
     }
 };
@@ -42,48 +39,38 @@ struct Tcompare                                //4
 struct U
 {
     float value1 { 0 }, value2 { 0 };
-    float calculateSomething(float* updatedVal)      //12
+    float calculateSomething(float& updatedVal)      //12
     {
-        if (updatedVal != nullptr)
+        std::cout << "U's value1 value: " << this->value1 << std::endl;
+        this->value1 = updatedVal;
+        std::cout << "U's value1 updated value: " << this->value1 << std::endl;
+        
+        while( std::abs(this->value2 - this->value1) > 0.001f )
         {
-            std::cout << "U's value1 value: " << this->value1 << std::endl;
-            this->value1 = *updatedVal;
-            std::cout << "U's value1 updated value: " << this->value1 << std::endl;
-            
-            while( std::abs(this->value2 - this->value1) > 0.001f )
-            {
-                this->value2 += (this->value1 - this->value2) / 2;
-            }
-            std::cout << "U's value2 updated value: " << this->value2 << std::endl;
-            return this->value2 * this->value1;    
+            this->value2 += (this->value1 - this->value2) / 2;
         }
-        std::cout << "nullptr-Error" << std::endl;
-        return 0.0f;
+        std::cout << "U's value2 updated value: " << this->value2 << std::endl;
+        return this->value2 * this->value1;    
     }
 };
 
 struct Uextended
 {
-    static float calculateSomething(U* that, float* updatedVal)        //10
+    static float calculateSomething(U& that, float& updatedVal)        //10
     {
-        if (that != nullptr && updatedVal != nullptr)
+        std::cout << "U's value1 value: " << that.value1 << std::endl;
+        that.value1 = updatedVal;
+        std::cout << "U's value1 updated value: " << that.value1 << std::endl;
+        
+        while( std::abs(that.value2 - that.value1) > 0.001f )
         {
-            std::cout << "U's value1 value: " << that->value1 << std::endl;
-            that->value1 = *updatedVal;
-            std::cout << "U's value1 updated value: " << that->value1 << std::endl;
-            
-            while( std::abs(that->value2 - that->value1) > 0.001f )
-            {
-                /*
-                write something that makes the distance between that->value2 and that->value1 get smaller
-                */
-                that->value2 += (that->value1 - that->value2) / 2;
-            }
-            std::cout << "U's value2 updated value: " << that->value2 << std::endl;
-            return that->value2 * that->value1;
+            /*
+            write something that makes the distance between that->value2 and that->value1 get smaller
+            */
+            that.value2 += (that.value1 - that.value2) / 2;
         }
-        std::cout << "nullptr-Error" << std::endl;
-        return 0.0f;
+        std::cout << "U's value2 updated value: " << that.value2 << std::endl;
+        return that.value2 * that.value1;
     }
 };
         
@@ -107,7 +94,7 @@ int main()
     T t2(15, "Second word");                                             //6
     
     Tcompare f;                                            //7
-    auto* smaller = f.compare(&t1, &t2);                              //8
+    auto* smaller = f.compare(t1, t2);                              //8
     if (smaller != nullptr)
     {
         std::cout << "the smaller one is << " << smaller->value << std::endl; //9
@@ -115,8 +102,8 @@ int main()
     
     U u1;
     float updatedValue = 5.f;
-    std::cout << "[static func] u1's multiplied values: " << Uextended::calculateSomething(&u1, &updatedValue) << std::endl;                  //11
+    std::cout << "[static func] u1's multiplied values: " << Uextended::calculateSomething(u1, updatedValue) << std::endl;                  //11
     
     U u2;
-    std::cout << "[member func] u2's multiplied values: " << u2.calculateSomething(&updatedValue) << std::endl;
+    std::cout << "[member func] u2's multiplied values: " << u2.calculateSomething(updatedValue) << std::endl;
 }
